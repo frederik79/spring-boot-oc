@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 #
 # S2I assemble script for the 'springboot-sti' image.
 # The 'assemble' script builds your application source ready to run.
@@ -13,20 +13,12 @@ if [ "$1" = "-h" ]; then
 	exec /usr/local/sti/usage
 fi
 
-# # Restore artifacts from the previous build (if they exist).
-# #
-# if [ "$(ls /tmp/artifacts/ 2>/dev/null)" ]; then
-#   echo "---> Restoring build artifacts"
-#   mv /tmp/artifacts/. ./
-# fi
-# 
-# echo "---> Installing application source"
-# cp -Rf /tmp/src/. ./
-# 
-# echo "---> Building application from source"
-# # TODO: Add build steps for your application, eg npm install, bundle install
-
-##############################################################################
+function restore_saved_artifacts() {
+  if [ "$(ls -lA /tmp/artifacts/ 2>/dev/null)" ]; then
+    echo -n "Restoring saved artifacts from prior build..."
+    mv /tmp/artifacts/.m2 $HOME/.
+  fi
+}
 
 # Source code provided to STI is at ${HOME}/source
 HOME=/opt/app-root/src
@@ -52,6 +44,11 @@ cp -ad /tmp/src/* $LOCAL_SOURCE_DIR
 # so run maven.
 if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   echo "Building with maven. $LOCAL_SOURCE_DIR/pom.xml found."
+
+  restore_saved_artifacts
+
+  echo `ls -latr $HOME/.m2`
+
   pushd $LOCAL_SOURCE_DIR &> /dev/null
 
   if [ -z "$BUILDER_ARGS" ]; then
@@ -78,9 +75,13 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 
   # clean up after maven
   mvn clean
-  if [ -d "$HOME/.m2/repository" ]; then
-    rm -r "$HOME/.m2/repository"
-  fi
+
+  #echo "***** MVN CLEAN DONE, NOW REMOVING M2 REPo"
+  #if [ -d "$HOME/.m2/repository" ]; then
+  #  rm -r "$HOME/.m2/repository"
+  #fi
+
+  #echo "$$$$$ M2 CLEANUP DONE"
 
   popd &> /dev/null
 elif [ -f "$LOCAL_SOURCE_DIR/build.gradle" ]; then
@@ -129,6 +130,8 @@ fi
 #   echo "Copying config files from project..."
 #   cp -v $LOCAL_SOURCE_DIR/configuration/* $ARTIFACTS_HOME
 # fi
+
+echo "!!!!! NOW MOVING APP TO openshift app.jar"
 
 # As SpringBoot you should only have 1 fat jar
 if [ $(ls /opt/openshift/*.jar | wc -l) -eq 1 ]; then
