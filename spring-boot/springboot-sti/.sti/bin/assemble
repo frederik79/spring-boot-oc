@@ -16,7 +16,7 @@ fi
 function restore_saved_artifacts() {
   if [ "$(ls -lA /tmp/artifacts/ 2>/dev/null)" ]; then
     echo -n "Restoring saved artifacts from prior build..."
-    mv /tmp/artifacts/.m2 $HOME/.
+    mv /tmp/artifacts/ $HOME/.m2
   fi
 }
 
