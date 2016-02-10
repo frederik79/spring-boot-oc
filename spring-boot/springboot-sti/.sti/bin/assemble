@@ -47,6 +47,8 @@ cp -ad /tmp/src/* $LOCAL_SOURCE_DIR
 if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   echo "Building with maven. $LOCAL_SOURCE_DIR/pom.xml found."
 
+  echo `ls -lAR /tmp/artifacts/`
+
   restore_saved_artifacts
 
   echo `ls -latr $HOME/.m2`
