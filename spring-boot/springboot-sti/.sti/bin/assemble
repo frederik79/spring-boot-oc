@@ -25,6 +25,8 @@ HOME=/opt/app-root/src
 LOCAL_SOURCE_DIR=${HOME}/source
 mkdir -p $LOCAL_SOURCE_DIR
 
+MAVEN_OPTS="-Dmaven.repo.local=/opt/app-root/src/source/.m2"
+
 DEPLOY_DIR=/opt/openshift
 
 # the subdirectory within LOCAL_SOURCE_DIR from where we should copy build artifacts
