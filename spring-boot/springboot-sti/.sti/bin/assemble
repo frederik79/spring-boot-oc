@@ -47,7 +47,12 @@ cp -ad /tmp/src/* $LOCAL_SOURCE_DIR
 if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   echo "Building with maven. $LOCAL_SOURCE_DIR/pom.xml found."
 
-  echo `ls -lAR /tmp/artifacts/`
+  echo `ls -lA /tmp/artifacts/opt/app-root/src/source/.m2`
+
+  echo "Maven version:"
+  mvn --version
+
+  echo `ls -latr $HOME/.m2`
 
   restore_saved_artifacts
 
@@ -61,8 +66,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 
   echo "Found pom.xml... attempting to build with 'mvn -e ${BUILDER_ARGS}'"
 
-  echo "Maven version:"
-  mvn --version
+
 
   # Execute the actual build
   mvn -e $BUILDER_ARGS
