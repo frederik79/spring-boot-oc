@@ -1,7 +1,8 @@
 #!/bin/sh -ex
 
-pushd ${HOME} >/dev/null
+#pushd ${HOME} >/dev/null
+pushd /opt/app-root/src/source/?/ > /dev/null
 
-tar cf - /opt/app-root/src/source/
+tar cvf - ./.m2
 
 popd >/dev/null

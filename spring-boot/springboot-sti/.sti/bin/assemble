@@ -14,9 +14,9 @@ if [ "$1" = "-h" ]; then
 fi
 
 function restore_saved_artifacts() {
-  if [ "$(ls -lA /tmp/artifacts/ 2>/dev/null)" ]; then
+  if [ "$(ls -lA /tmp/artifacts/.m2 2>/dev/null)" ]; then
     echo -n "Restoring saved artifacts from prior build..."
-    mv /tmp/artifacts/opt/app-root/src/source/.m2/* /opt/app-root/src/source/.m2/repository
+    mv /tmp/artifacts/.m2/* /opt/app-root/src/source/?/.m2/
   fi
 }
 
