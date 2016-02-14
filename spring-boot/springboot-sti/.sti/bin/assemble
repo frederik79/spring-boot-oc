@@ -13,19 +13,19 @@ if [ "$1" = "-h" ]; then
 	exec /usr/local/sti/usage
 fi
 
-function restore_saved_artifacts() {
-  if [ "$(ls -lA /tmp/artifacts/.m2 2>/dev/null)" ]; then
-    echo -n "Restoring saved artifacts from prior build..."
-    mv /tmp/artifacts/opt/app-root/src/source/?/* /opt/app-root/src/source/.m2/
-  fi
-}
+#function restore_saved_artifacts() {
+#  if [ "$(ls -lA /tmp/artifacts/.m2 2>/dev/null)" ]; then
+#    echo -n "Restoring saved artifacts from prior build..."
+#    mv /tmp/artifacts/opt/app-root/src/source/?/* /opt/app-root/src/source/.m2/
+#  fi
+#}
 
 # Source code provided to STI is at ${HOME}/source
 HOME=/opt/app-root/src
 LOCAL_SOURCE_DIR=${HOME}/source
 mkdir -p $LOCAL_SOURCE_DIR
 
-MAVEN_OPTS="-Dmaven.repo.local=/opt/app-root/src/source/.m2"
+#MAVEN_OPTS="-Dmaven.repo.local=/opt/app-root/src/source/.m2"
 
 DEPLOY_DIR=/opt/openshift
 
@@ -47,21 +47,25 @@ cp -ad /tmp/src/* $LOCAL_SOURCE_DIR
 if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   echo "Building with maven. $LOCAL_SOURCE_DIR/pom.xml found."
 
-  echo `ls -lA /tmp/artifacts/opt/app-root/src/source/.m2`
+#  echo `ls -lA /tmp/artifacts/opt/app-root/src/source/.m2`
 
   echo "Maven version:"
   mvn --version
 
-  echo `ls -latr $HOME/.m2`
-
-  restore_saved_artifacts
-
-  echo `ls -latr $HOME/.m2`
+#  echo `ls -latr $HOME/.m2`
+#
+#  restore_saved_artifacts
+#
+#  echo `ls -latr $HOME/.m2`
 
   pushd $LOCAL_SOURCE_DIR &> /dev/null
 
   if [ -z "$BUILDER_ARGS" ]; then
     export BUILDER_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga"
+  fi
+
+  if [ -z "$OSE_NEXUS_URL" ]; then
+    echo "OSE_NEXUS_URL env var not set, maven builds won't work correctly, set this to the nexus repo url e.g. http://127.0.0.1:8081/nexus/content/groups/public"
   fi
 
   echo "Found pom.xml... attempting to build with 'mvn -e ${BUILDER_ARGS}'"
